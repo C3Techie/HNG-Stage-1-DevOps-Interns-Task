@@ -13,8 +13,8 @@ app.use(express.json());
 // Checks if a number is prime
 const isPrime = (value) => {
     if (value <= 1) return false; // Return false for numbers that are less/equal to 1 (not prime numbers) 
-    for (let x = 2; x <= Math.sqrt(value); x++) { // Loop from 2 to the square root of the number
-        if (value % x === 0) return false; // If number is divisible by any number, it is not prime
+    for (let x = 2; x <= Math.sqrt(Math.abs(value)); x++) { // Loop from 2 to the square root of the number
+        if (Math.abs(value) % x === 0) return false; // If number is divisible by any number, it is not prime
     }
     return true; // // Return true if no divisor is found
 };
@@ -23,13 +23,16 @@ const isPrime = (value) => {
 const isPerfect = (value) => {
     if (value <= 1) return false; // Return false for numbers that are less/equal to 1 (not perfect numbers)
     let sum = 1; // Start the sum at 1, because 1 is a divisor of all numbers
-    for (let x = 2; x <= Math.sqrt(value); x++) { // Loop from 2 to the square root of the number
-        if (value % x === 0) { // If a number divides the value
+
+    const absValue = Math.abs(value);
+
+    for (let x = 2; x <= Math.sqrt(absValue); x++) { // Loop from 2 to the square root of the number
+        if (absValue % x === 0) { // If a number divides the value
             sum += x; // Add the divisor to the sum
-            if (x !== value / x) sum += value / x; // Add the complementary divisor if it is different
+            if (x !== absValue / x) sum += absValue / x; // Add the complementary divisor if it is different
         }
     }
-    return sum === value; // If the sum of divisors equals the number, it is perfect
+    return sum === absValue; // If the sum of divisors equals the number, it is perfect
 };
 
 // Checks if a number is an Armstrong
@@ -42,7 +45,7 @@ const isArmstrong = (value) => {
 
 // Calculate the sum of digits of a number
 const getDigitSum = (value) => {
-    return String(value) // Convert value to string
+    return String(Math.abs(value)) // Convert value to string
         .split('') // Split into individual digits
         .reduce((total, element) => total + Number(element), 0); // Sum the digits
 };
@@ -73,7 +76,7 @@ app.get('/api/classify-number', async (req, res) => {
         // Fetch fun fact about the number from Numbers API
         let funFact;
         try {
-            const response = await axios.get(`http://numbersapi.com/${number}/math`); // Get a fun fact about the number
+            const response = await axios.get(`http://numbersapi.com/${Math.floor(number)}/math`); // Get a fun fact about the number
             funFact = response.data; // Save the response as the fun fact
         } catch (error) {
             funFact = `${number} is a number`; // If something goes wrong, just say it's a number
